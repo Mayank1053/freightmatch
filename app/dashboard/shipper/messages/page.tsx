@@ -1,17 +1,21 @@
 "use client"
 
+import type React from "react"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { MessageCircle, Search, Phone, MoreVertical, Send } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+import { MessageCircle, Search, Phone, MoreVertical, Send, Video } from "lucide-react"
 import { useState } from "react"
 
 export default function ShipperMessagesPage() {
   const [selectedChat, setSelectedChat] = useState<string | null>("1")
   const [newMessage, setNewMessage] = useState("")
+  const { toast } = useToast()
 
   // Mock data - replace with real API calls
   const conversations = [
@@ -105,10 +109,31 @@ export default function ShipperMessagesPage() {
 
   const selectedConversation = conversations.find((c) => c.id === selectedChat)
 
+  const handleCall = (phoneNumber: string, contactName: string) => {
+    // Open phone dialer
+    window.open(`tel:${phoneNumber}`, "_self")
+
+    toast({
+      title: "Opening Phone App",
+      description: `Calling ${contactName} at ${phoneNumber}`,
+    })
+  }
+
   const handleSendMessage = () => {
     if (newMessage.trim()) {
-      // Add message logic here
+      // Add message logic here - for now just clear input and show toast
+      toast({
+        title: "Message Sent",
+        description: "Your message has been delivered",
+      })
       setNewMessage("")
+    }
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      handleSendMessage()
     }
   }
 
@@ -217,10 +242,28 @@ export default function ShipperMessagesPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button size="sm" variant="outline">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleCall("+91 9876543210", selectedConversation.driver.name)}
+                      className="bg-transparent"
+                    >
                       <Phone className="h-4 w-4" />
                     </Button>
-                    <Button size="sm" variant="outline">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        toast({
+                          title: "Video Call",
+                          description: "Video calling feature coming soon!",
+                        })
+                      }
+                      className="bg-transparent"
+                    >
+                      <Video className="h-4 w-4" />
+                    </Button>
+                    <Button size="sm" variant="outline" className="bg-transparent">
                       <MoreVertical className="h-4 w-4" />
                     </Button>
                   </div>
@@ -255,10 +298,14 @@ export default function ShipperMessagesPage() {
                     placeholder="Type your message..."
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                    onKeyPress={handleKeyPress}
                     className="flex-1"
                   />
-                  <Button onClick={handleSendMessage}>
+                  <Button
+                    onClick={handleSendMessage}
+                    disabled={!newMessage.trim()}
+                    className={newMessage.trim() ? "bg-blue-600 hover:bg-blue-700" : ""}
+                  >
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>

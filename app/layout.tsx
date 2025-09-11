@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: "FreightMatch - Connect Empty Trucks with Freight Loads",
   description:
     "Reduce empty miles, increase profits. Our platform matches truck owners with return cargo opportunities.",
+  generator: "v0.app",
 }
 
 export default function RootLayout({

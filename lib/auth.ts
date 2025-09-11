@@ -1,3 +1,4 @@
+// Authentication utilities and types
 export type UserRole = "truck-owner" | "shipper" | "admin"
 
 export interface User {

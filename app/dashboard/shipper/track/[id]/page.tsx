@@ -1,3 +1,5 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -63,6 +65,10 @@ export default function TrackShipmentPage({ params }: { params: { id: string } }
       avatar: "/indian-truck-driver.jpg",
     },
   ]
+
+  const handleCall = () => {
+    window.open(`tel:${shipment.driver.phone}`, "_self")
+  }
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -161,7 +167,7 @@ export default function TrackShipmentPage({ params }: { params: { id: string } }
               </div>
 
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="flex-1 bg-transparent">
+                <Button size="sm" variant="outline" className="flex-1 bg-transparent" onClick={handleCall}>
                   <Phone className="h-4 w-4 mr-1" />
                   Call
                 </Button>

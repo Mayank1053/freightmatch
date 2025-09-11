@@ -10,8 +10,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
+import { PaymentModal } from "@/components/payment/payment-modal"
+import { useToast } from "@/hooks/use-toast"
 import { ArrowLeft, Search, MapPin, Package, Star, Phone, MessageCircle, Filter } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 // Mock truck data
 const mockTrucks = [
@@ -87,6 +90,13 @@ export default function SearchTrucksPage() {
   })
 
   const [showFilters, setShowFilters] = useState(false)
+  const [paymentModal, setPaymentModal] = useState({
+    isOpen: false,
+    selectedTruck: null as (typeof mockTrucks)[0] | null,
+  })
+
+  const { toast } = useToast()
+  const router = useRouter()
 
   const handleSearchChange = (field: string, value: string) => {
     setSearchForm((prev) => ({ ...prev, [field]: value }))
@@ -100,11 +110,47 @@ export default function SearchTrucksPage() {
     e.preventDefault()
     // TODO: Implement search logic
     console.log("Search:", searchForm, filters)
+    toast({
+      title: "Search Updated",
+      description: "Showing trucks matching your criteria",
+    })
   }
 
   const handleBookTruck = (truckId: string) => {
-    // TODO: Implement booking logic
-    console.log("Booking truck:", truckId)
+    const selectedTruck = mockTrucks.find((truck) => truck.id === truckId)
+    if (selectedTruck) {
+      setPaymentModal({
+        isOpen: true,
+        selectedTruck,
+      })
+    }
+  }
+
+  const handlePaymentSuccess = (paymentId: string) => {
+    toast({
+      title: "Booking Confirmed!",
+      description: `Your truck has been booked successfully. Payment ID: ${paymentId}`,
+    })
+
+    // Navigate to shipments page after successful booking
+    setTimeout(() => {
+      router.push("/dashboard/shipper/shipments")
+    }, 2000)
+  }
+
+  const handleCall = (phone: string, truckerName: string) => {
+    window.open(`tel:${phone}`)
+    toast({
+      title: "Opening Phone App",
+      description: `Calling ${truckerName}...`,
+    })
+  }
+
+  const handleChat = (truckerName: string) => {
+    toast({
+      title: "Chat Feature",
+      description: `Opening chat with ${truckerName}...`,
+    })
   }
 
   return (
@@ -345,11 +391,15 @@ export default function SearchTrucksPage() {
                       <Package className="h-4 w-4 mr-2" />
                       Book Now
                     </Button>
-                    <Button variant="outline" className="bg-transparent">
+                    <Button
+                      variant="outline"
+                      className="bg-transparent"
+                      onClick={() => handleCall(truck.owner.phone, truck.owner.name)}
+                    >
                       <Phone className="h-4 w-4 mr-2" />
                       Call
                     </Button>
-                    <Button variant="outline" className="bg-transparent">
+                    <Button variant="outline" className="bg-transparent" onClick={() => handleChat(truck.owner.name)}>
                       <MessageCircle className="h-4 w-4 mr-2" />
                       Chat
                     </Button>
@@ -373,6 +423,21 @@ export default function SearchTrucksPage() {
               </Link>
             </CardContent>
           </Card>
+        )}
+
+        {/* Payment Modal */}
+        {paymentModal.selectedTruck && (
+          <PaymentModal
+            isOpen={paymentModal.isOpen}
+            onClose={() => setPaymentModal({ isOpen: false, selectedTruck: null })}
+            bookingDetails={{
+              route: paymentModal.selectedTruck.route,
+              trucker: paymentModal.selectedTruck.owner.name,
+              amount: paymentModal.selectedTruck.price,
+              bookingId: `BK${Date.now()}`,
+            }}
+            onPaymentSuccess={handlePaymentSuccess}
+          />
         )}
       </div>
     </ProtectedRoute>

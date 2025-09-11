@@ -4,7 +4,7 @@ import { ProtectedRoute } from "@/components/protected-route"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Truck, Plus, MapPin, DollarSign, TrendingUp, Clock } from "lucide-react"
+import { Truck, Plus, MapPin, DollarSign, TrendingUp, Clock, FileText, Star } from "lucide-react"
 import Link from "next/link"
 
 // Mock data - replace with real API calls
@@ -143,6 +143,45 @@ export default function TruckOwnerDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Quick Actions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Manage your business efficiently</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Link href="/dashboard/truck-owner/invoices">
+                <Button variant="outline" className="w-full h-20 flex-col gap-2 bg-transparent">
+                  <FileText className="h-6 w-6 text-blue-600" />
+                  <span className="text-sm">Invoices</span>
+                </Button>
+              </Link>
+
+              <Link href="/dashboard/truck-owner/ratings">
+                <Button variant="outline" className="w-full h-20 flex-col gap-2 bg-transparent">
+                  <Star className="h-6 w-6 text-yellow-500" />
+                  <span className="text-sm">Ratings</span>
+                </Button>
+              </Link>
+
+              <Link href="/dashboard/truck-owner/earnings">
+                <Button variant="outline" className="w-full h-20 flex-col gap-2 bg-transparent">
+                  <DollarSign className="h-6 w-6 text-green-600" />
+                  <span className="text-sm">Earnings</span>
+                </Button>
+              </Link>
+
+              <Link href="/dashboard/truck-owner/bookings">
+                <Button variant="outline" className="w-full h-20 flex-col gap-2 bg-transparent">
+                  <Truck className="h-6 w-6 text-purple-600" />
+                  <span className="text-sm">Bookings</span>
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Recent Bookings */}
         <Card>
