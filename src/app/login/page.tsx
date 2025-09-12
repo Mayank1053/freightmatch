@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Truck, ArrowLeft } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
-import type { UserRole } from "@/lib/auth"
+import type { UserRole } from "@/auth/types"
 
 export default function LoginPage() {
   const [userType, setUserType] = useState<UserRole | "">("")

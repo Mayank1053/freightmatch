@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Truck, ArrowLeft, Package, Shield } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
-import type { UserRole } from "@/lib/auth"
+import type { UserRole } from "@/auth/types"
 
 export default function SignupPage() {
   const searchParams = useSearchParams()

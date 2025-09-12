@@ -117,7 +117,7 @@ export default function AdminDashboard() {
       <div className="space-y-8">
         {/* Welcome Section */}
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Admin Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Admin Dashboard</h1>
           <p className="text-slate-600 mt-1">Monitor and manage the FreightMatch platform</p>
         </div>
 
@@ -206,7 +206,7 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recent Activity */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <CardTitle>Recent Activity</CardTitle>
                 <CardDescription>Latest platform events and actions</CardDescription>
@@ -235,7 +235,7 @@ export default function AdminDashboard() {
 
           {/* Pending Approvals */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <CardTitle>Pending Approvals</CardTitle>
                 <CardDescription>Items requiring admin review</CardDescription>
@@ -249,7 +249,7 @@ export default function AdminDashboard() {
             <CardContent>
               <div className="space-y-4">
                 {mockPendingApprovals.map((approval) => (
-                  <div key={approval.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div key={approval.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border rounded-lg gap-3">
                     <div className="flex-1">
                       <div className="font-medium text-sm">{approval.type}</div>
                       <div className="text-xs text-slate-600">

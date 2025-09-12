@@ -98,7 +98,7 @@ export default function TruckOwnerDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs md:text-sm font-medium">Active Listings</CardTitle>
@@ -151,7 +151,7 @@ export default function TruckOwnerDashboard() {
             <CardDescription>Manage your business efficiently</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
               <Link href="/dashboard/truck-owner/invoices">
                 <Button variant="outline" className="w-full h-16 md:h-20 flex-col gap-2 bg-transparent">
                   <FileText className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />

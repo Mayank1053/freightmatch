@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   description:
     "Reduce empty miles, increase profits. Our platform matches truck owners with return cargo opportunities.",
   generator: "v0.app",
+  manifest: "/manifest.json",
 }
 
 export default function RootLayout({
@@ -26,6 +27,21 @@ export default function RootLayout({
           <AuthProvider>{children}</AuthProvider>
         </Suspense>
         <Analytics />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('SW registered: ', registration);
+                  }).catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                  });
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   )

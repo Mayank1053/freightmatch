@@ -71,9 +71,9 @@ export default function ShipperDashboard() {
     <ProtectedRoute allowedRoles={["shipper"]}>
       <div className="space-y-8">
         {/* Welcome Section */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Dashboard</h1>
             <p className="text-slate-600 mt-1">Manage your shipments and find trucks</p>
           </div>
           <Link href="/dashboard/shipper/search">
@@ -118,7 +118,7 @@ export default function ShipperDashboard() {
 
         {/* Recent Shipments */}
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <CardTitle>Recent Shipments</CardTitle>
               <CardDescription>Your latest shipping activity</CardDescription>
@@ -132,7 +132,7 @@ export default function ShipperDashboard() {
           <CardContent>
             <div className="space-y-4">
               {mockRecentShipments.map((shipment) => (
-                <div key={shipment.id} className="flex items-center justify-between p-4 border rounded-lg">
+                <div key={shipment.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg gap-4">
                   <div className="flex items-center gap-4">
                     <div className="p-2 bg-blue-50 rounded-lg">
                       <Package className="h-5 w-5 text-blue-600" />

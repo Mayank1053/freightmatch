@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { createContext, useContext, useState, useEffect } from "react"
-import { type UserRole, type AuthState, mockLogin, mockSignup } from "@/lib/auth"
+import { type UserRole, type AuthState, mockLogin, mockSignup } from "@/auth/types"
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string, role: UserRole) => Promise<void>
