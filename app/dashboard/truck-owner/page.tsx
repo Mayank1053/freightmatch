@@ -82,15 +82,15 @@ export default function TruckOwnerDashboard() {
 
   return (
     <ProtectedRoute allowedRoles={["truck-owner"]}>
-      <div className="space-y-8">
+      <div className="space-y-6 md:space-y-8">
         {/* Welcome Section */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-slate-900">Dashboard</h1>
             <p className="text-slate-600 mt-1">Manage your trucks and bookings</p>
           </div>
           <Link href="/dashboard/truck-owner/list-trip">
-            <Button size="lg">
+            <Button size="lg" className="w-full sm:w-auto">
               <Plus className="mr-2 h-5 w-5" />
               List New Trip
             </Button>
@@ -98,47 +98,47 @@ export default function TruckOwnerDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Listings</CardTitle>
+              <CardTitle className="text-xs md:text-sm font-medium">Active Listings</CardTitle>
               <Truck className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{mockStats.activeListings}</div>
+              <div className="text-xl md:text-2xl font-bold">{mockStats.activeListings}</div>
               <p className="text-xs text-slate-600">Available for booking</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
+              <CardTitle className="text-xs md:text-sm font-medium">Total Earnings</CardTitle>
               <DollarSign className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">₹{mockStats.totalEarnings.toLocaleString()}</div>
+              <div className="text-xl md:text-2xl font-bold">₹{mockStats.totalEarnings.toLocaleString()}</div>
               <p className="text-xs text-slate-600">This month</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Completed Trips</CardTitle>
+              <CardTitle className="text-xs md:text-sm font-medium">Completed Trips</CardTitle>
               <TrendingUp className="h-4 w-4 text-purple-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{mockStats.completedTrips}</div>
+              <div className="text-xl md:text-2xl font-bold">{mockStats.completedTrips}</div>
               <p className="text-xs text-slate-600">All time</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending Bookings</CardTitle>
+              <CardTitle className="text-xs md:text-sm font-medium">Pending Bookings</CardTitle>
               <Clock className="h-4 w-4 text-orange-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{mockStats.pendingBookings}</div>
+              <div className="text-xl md:text-2xl font-bold">{mockStats.pendingBookings}</div>
               <p className="text-xs text-slate-600">Awaiting response</p>
             </CardContent>
           </Card>
@@ -147,36 +147,36 @@ export default function TruckOwnerDashboard() {
         {/* Quick Actions */}
         <Card>
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+            <CardTitle className="text-lg md:text-xl">Quick Actions</CardTitle>
             <CardDescription>Manage your business efficiently</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
               <Link href="/dashboard/truck-owner/invoices">
-                <Button variant="outline" className="w-full h-20 flex-col gap-2 bg-transparent">
-                  <FileText className="h-6 w-6 text-blue-600" />
-                  <span className="text-sm">Invoices</span>
+                <Button variant="outline" className="w-full h-16 md:h-20 flex-col gap-2 bg-transparent">
+                  <FileText className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
+                  <span className="text-xs md:text-sm">Invoices</span>
                 </Button>
               </Link>
 
               <Link href="/dashboard/truck-owner/ratings">
-                <Button variant="outline" className="w-full h-20 flex-col gap-2 bg-transparent">
-                  <Star className="h-6 w-6 text-yellow-500" />
-                  <span className="text-sm">Ratings</span>
+                <Button variant="outline" className="w-full h-16 md:h-20 flex-col gap-2 bg-transparent">
+                  <Star className="h-5 w-5 md:h-6 md:w-6 text-yellow-500" />
+                  <span className="text-xs md:text-sm">Ratings</span>
                 </Button>
               </Link>
 
               <Link href="/dashboard/truck-owner/earnings">
-                <Button variant="outline" className="w-full h-20 flex-col gap-2 bg-transparent">
-                  <DollarSign className="h-6 w-6 text-green-600" />
-                  <span className="text-sm">Earnings</span>
+                <Button variant="outline" className="w-full h-16 md:h-20 flex-col gap-2 bg-transparent">
+                  <DollarSign className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
+                  <span className="text-xs md:text-sm">Earnings</span>
                 </Button>
               </Link>
 
               <Link href="/dashboard/truck-owner/bookings">
-                <Button variant="outline" className="w-full h-20 flex-col gap-2 bg-transparent">
-                  <Truck className="h-6 w-6 text-purple-600" />
-                  <span className="text-sm">Bookings</span>
+                <Button variant="outline" className="w-full h-16 md:h-20 flex-col gap-2 bg-transparent">
+                  <Truck className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
+                  <span className="text-xs md:text-sm">Bookings</span>
                 </Button>
               </Link>
             </div>
@@ -185,36 +185,39 @@ export default function TruckOwnerDashboard() {
 
         {/* Recent Bookings */}
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <CardTitle>Recent Bookings</CardTitle>
+              <CardTitle className="text-lg md:text-xl">Recent Bookings</CardTitle>
               <CardDescription>Latest booking requests and confirmations</CardDescription>
             </div>
             <Link href="/dashboard/truck-owner/bookings">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="w-full sm:w-auto bg-transparent">
                 View All
               </Button>
             </Link>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
               {mockRecentBookings.map((booking) => (
-                <div key={booking.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center gap-4">
+                <div
+                  key={booking.id}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 md:p-4 border rounded-lg gap-3"
+                >
+                  <div className="flex items-center gap-3 md:gap-4">
                     <div className="p-2 bg-blue-50 rounded-lg">
-                      <MapPin className="h-5 w-5 text-blue-600" />
+                      <MapPin className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
                     </div>
                     <div>
-                      <div className="font-medium">{booking.route}</div>
-                      <div className="text-sm text-slate-600">
+                      <div className="font-medium text-sm md:text-base">{booking.route}</div>
+                      <div className="text-xs md:text-sm text-slate-600">
                         {booking.shipper} • {booking.cargo}
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-between sm:justify-end gap-3 md:gap-4">
                     <div className="text-right">
-                      <div className="font-medium">₹{booking.amount.toLocaleString()}</div>
-                      <div className="text-sm text-slate-600">{booking.date}</div>
+                      <div className="font-medium text-sm md:text-base">₹{booking.amount.toLocaleString()}</div>
+                      <div className="text-xs md:text-sm text-slate-600">{booking.date}</div>
                     </div>
                     <Badge className={getStatusColor(booking.status)}>{booking.status}</Badge>
                   </div>
@@ -226,35 +229,38 @@ export default function TruckOwnerDashboard() {
 
         {/* Active Listings */}
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <CardTitle>Active Listings</CardTitle>
+              <CardTitle className="text-lg md:text-xl">Active Listings</CardTitle>
               <CardDescription>Your current empty return trips</CardDescription>
             </div>
             <Link href="/dashboard/truck-owner/listings">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="w-full sm:w-auto bg-transparent">
                 Manage All
               </Button>
             </Link>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
               {mockActiveListings.map((listing) => (
-                <div key={listing.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center gap-4">
+                <div
+                  key={listing.id}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 md:p-4 border rounded-lg gap-3"
+                >
+                  <div className="flex items-center gap-3 md:gap-4">
                     <div className="p-2 bg-green-50 rounded-lg">
-                      <Truck className="h-5 w-5 text-green-600" />
+                      <Truck className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
                     </div>
                     <div>
-                      <div className="font-medium">{listing.route}</div>
-                      <div className="text-sm text-slate-600">
+                      <div className="font-medium text-sm md:text-base">{listing.route}</div>
+                      <div className="text-xs md:text-sm text-slate-600">
                         {listing.capacity} • {listing.date}
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-between sm:justify-end gap-3 md:gap-4">
                     <div className="text-right">
-                      <div className="font-medium">₹{listing.price.toLocaleString()}</div>
+                      <div className="font-medium text-sm md:text-base">₹{listing.price.toLocaleString()}</div>
                       <Badge className={getStatusColor(listing.status)}>{listing.status}</Badge>
                     </div>
                   </div>

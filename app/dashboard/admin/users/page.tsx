@@ -7,8 +7,29 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft, Search, Users, Eye, Ban, CheckCircle, AlertTriangle } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  ArrowLeft,
+  Search,
+  Users,
+  Eye,
+  Ban,
+  CheckCircle,
+  AlertTriangle,
+  Phone,
+  Mail,
+  Calendar,
+  Star,
+} from "lucide-react"
 import Link from "next/link"
+import { toast } from "@/hooks/use-toast"
 
 // Mock user data
 const mockUsers = [
@@ -70,8 +91,10 @@ export default function UsersPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [roleFilter, setRoleFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
+  const [selectedUser, setSelectedUser] = useState<any>(null)
+  const [users, setUsers] = useState(mockUsers)
 
-  const filteredUsers = mockUsers.filter((user) => {
+  const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -107,8 +130,48 @@ export default function UsersPage() {
   }
 
   const handleUserAction = (userId: string, action: string) => {
-    // TODO: Implement user actions
-    console.log(`${action} user:`, userId)
+    const user = users.find((u) => u.id === userId)
+    if (!user) return
+
+    // Update user status in the users array
+    const updatedUsers = users.map((u) => {
+      if (u.id === userId) {
+        switch (action) {
+          case "suspend":
+            return { ...u, status: "suspended" }
+          case "activate":
+            return { ...u, status: "active" }
+          case "verify":
+            return { ...u, verified: true }
+          default:
+            return u
+        }
+      }
+      return u
+    })
+
+    setUsers(updatedUsers)
+
+    switch (action) {
+      case "suspend":
+        toast({
+          title: "User Suspended",
+          description: `${user.name} has been suspended successfully.`,
+        })
+        break
+      case "activate":
+        toast({
+          title: "User Activated",
+          description: `${user.name} has been activated successfully.`,
+        })
+        break
+      case "verify":
+        toast({
+          title: "User Verified",
+          description: `${user.name} has been verified successfully.`,
+        })
+        break
+    }
   }
 
   return (
@@ -133,7 +196,7 @@ export default function UsersPage() {
           <Card>
             <CardContent className="p-4">
               <div className="text-2xl font-bold text-blue-600">
-                {mockUsers.filter((u) => u.role === "truck-owner").length}
+                {users.filter((u) => u.role === "truck-owner").length}
               </div>
               <div className="text-sm text-slate-600">Truck Owners</div>
             </CardContent>
@@ -141,7 +204,7 @@ export default function UsersPage() {
           <Card>
             <CardContent className="p-4">
               <div className="text-2xl font-bold text-purple-600">
-                {mockUsers.filter((u) => u.role === "shipper").length}
+                {users.filter((u) => u.role === "shipper").length}
               </div>
               <div className="text-sm text-slate-600">Shippers</div>
             </CardContent>
@@ -149,14 +212,14 @@ export default function UsersPage() {
           <Card>
             <CardContent className="p-4">
               <div className="text-2xl font-bold text-green-600">
-                {mockUsers.filter((u) => u.status === "active").length}
+                {users.filter((u) => u.status === "active").length}
               </div>
               <div className="text-sm text-slate-600">Active Users</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4">
-              <div className="text-2xl font-bold text-yellow-600">{mockUsers.filter((u) => !u.verified).length}</div>
+              <div className="text-2xl font-bold text-yellow-600">{users.filter((u) => !u.verified).length}</div>
               <div className="text-sm text-slate-600">Unverified</div>
             </CardContent>
           </Card>
@@ -245,42 +308,164 @@ export default function UsersPage() {
                   </div>
                 </div>
 
-                {/* Actions */}
                 <div className="flex gap-2 mt-4 pt-4 border-t">
-                  <Button variant="outline" size="sm" onClick={() => handleUserAction(user.id, "view")}>
-                    <Eye className="h-4 w-4 mr-2" />
-                    View Details
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" onClick={() => setSelectedUser(user)}>
+                        <Eye className="h-4 w-4 mr-2" />
+                        View Details
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle>User Details - {user.name}</DialogTitle>
+                        <DialogDescription>Complete user information and activity</DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-6">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-2">
+                              <Mail className="h-4 w-4 text-slate-500" />
+                              <span className="text-sm">{user.email}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Phone className="h-4 w-4 text-slate-500" />
+                              <span className="text-sm">{user.phone}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-4 w-4 text-slate-500" />
+                              <span className="text-sm">Joined {user.joinDate}</span>
+                            </div>
+                            {user.rating && (
+                              <div className="flex items-center gap-2">
+                                <Star className="h-4 w-4 text-slate-500" />
+                                <span className="text-sm">{user.rating} rating</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-2">
+                              <Badge className={getRoleColor(user.role)}>
+                                {user.role.replace("-", " ").toUpperCase()}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Badge className={getStatusColor(user.status)}>{user.status.toUpperCase()}</Badge>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {user.verified ? (
+                                <Badge className="bg-green-100 text-green-800">Verified</Badge>
+                              ) : (
+                                <Badge className="bg-yellow-100 text-yellow-800">Unverified</Badge>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4 bg-slate-50 rounded-lg">
+                          <h4 className="font-medium mb-2">Activity Summary</h4>
+                          <div className="text-sm text-slate-600">
+                            <p>Last active: {user.lastActive}</p>
+                            <p>
+                              Total {user.role === "truck-owner" ? "trips" : "shipments"}:{" "}
+                              {user.role === "truck-owner" ? user.totalTrips : user.totalShipments}
+                            </p>
+                            {user.rating && <p>Average rating: {user.rating}/5.0</p>}
+                          </div>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
 
                   {user.status === "active" && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-red-600 hover:text-red-700 bg-transparent"
-                      onClick={() => handleUserAction(user.id, "suspend")}
-                    >
-                      <Ban className="h-4 w-4 mr-2" />
-                      Suspend
-                    </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300 bg-transparent"
+                        >
+                          <Ban className="h-4 w-4 mr-2" />
+                          Suspend User
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Suspend User</DialogTitle>
+                          <DialogDescription>
+                            Are you sure you want to suspend {user.name}? They will not be able to access the platform.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="flex gap-3 justify-end">
+                          <Button variant="outline">Cancel</Button>
+                          <Button
+                            className="bg-red-600 hover:bg-red-700"
+                            onClick={() => handleUserAction(user.id, "suspend")}
+                          >
+                            Suspend User
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   )}
 
                   {user.status === "suspended" && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-green-600 hover:text-green-700 bg-transparent"
-                      onClick={() => handleUserAction(user.id, "activate")}
-                    >
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Activate
-                    </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-green-600 hover:text-green-700 border-green-200 hover:border-green-300 bg-transparent"
+                        >
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Activate User
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Activate User</DialogTitle>
+                          <DialogDescription>
+                            Are you sure you want to activate {user.name}? They will regain access to the platform.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="flex gap-3 justify-end">
+                          <Button variant="outline">Cancel</Button>
+                          <Button
+                            className="bg-green-600 hover:bg-green-700"
+                            onClick={() => handleUserAction(user.id, "activate")}
+                          >
+                            Activate User
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   )}
 
                   {!user.verified && (
-                    <Button size="sm" onClick={() => handleUserAction(user.id, "verify")}>
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Verify
-                    </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Verify User
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Verify User</DialogTitle>
+                          <DialogDescription>
+                            Are you sure you want to verify {user.name}? This will mark them as a verified user.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="flex gap-3 justify-end">
+                          <Button variant="outline">Cancel</Button>
+                          <Button
+                            className="bg-blue-600 hover:bg-blue-700"
+                            onClick={() => handleUserAction(user.id, "verify")}
+                          >
+                            Verify User
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   )}
                 </div>
               </CardContent>

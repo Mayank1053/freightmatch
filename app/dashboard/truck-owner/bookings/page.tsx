@@ -1,5 +1,7 @@
 "use client"
 
+import { DialogTrigger } from "@/components/ui/dialog"
+
 import { useState } from "react"
 import { ProtectedRoute } from "@/components/protected-route"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -214,6 +216,24 @@ export default function BookingsPage() {
     setRatingComment("")
   }
 
+  const confirmCompleteTrip = () => {
+    setBookings((prev) =>
+      prev.map((booking) =>
+        booking.id === selectedBooking.id
+          ? { ...booking, status: "completed", completedAt: new Date().toISOString() }
+          : booking,
+      ),
+    )
+
+    toast({
+      title: "Trip Completed",
+      description: `Trip for ${selectedBooking?.route} has been marked as completed successfully.`,
+    })
+
+    setShowTripDetails(false)
+    setSelectedBooking(null)
+  }
+
   return (
     <ProtectedRoute allowedRoles={["truck-owner"]}>
       <div className="space-y-6">
@@ -297,10 +317,6 @@ export default function BookingsPage() {
                       <Phone className="h-4 w-4 mr-2" />
                       Call
                     </Button>
-                    <Button variant="outline" size="sm">
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Chat
-                    </Button>
                   </div>
                 </div>
 
@@ -354,7 +370,47 @@ export default function BookingsPage() {
                     <Button variant="outline" className="flex-1 bg-blue-50 text-blue-700 border-blue-200">
                       Trip In Progress
                     </Button>
-                    <Button className="flex-1">Complete Trip</Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button className="flex-1">Complete Trip</Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Complete Trip</DialogTitle>
+                          <DialogDescription>
+                            Are you sure you want to mark this trip as completed? This action cannot be undone.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div className="p-4 bg-green-50 rounded-lg">
+                            <h4 className="font-medium text-green-900 mb-2">Trip Summary</h4>
+                            <div className="text-sm text-green-700 space-y-1">
+                              <p>Route: {booking.route}</p>
+                              <p>Shipper: {booking.shipper.name}</p>
+                              <p>
+                                Cargo: {booking.cargo.type} ({booking.cargo.weight})
+                              </p>
+                              <p>Amount: ₹{booking.amount.toLocaleString()}</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-3">
+                            <Button
+                              variant="outline"
+                              className="flex-1 bg-transparent"
+                              onClick={() => setShowTripDetails(false)}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              className="flex-1 bg-green-600 hover:bg-green-700"
+                              onClick={() => confirmCompleteTrip()}
+                            >
+                              Complete Trip
+                            </Button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 )}
 

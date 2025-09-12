@@ -7,8 +7,19 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft, Search, FileText, CheckCircle, X, Eye, Download } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Textarea } from "@/components/ui/textarea"
+import { ArrowLeft, Search, FileText, CheckCircle, X, Eye } from "lucide-react"
 import Link from "next/link"
+import { toast } from "@/hooks/use-toast"
+import DocumentViewer from "@/components/document-viewer" // Import DocumentViewer component
 
 // Mock verification data
 const mockVerifications = [
@@ -20,11 +31,11 @@ const mockVerifications = [
       type: "truck-owner",
     },
     verificationType: "KYC Documents",
-    documents: ["Aadhaar Card", "PAN Card", "Driving License"],
+    documents: ["RC Book", "Insurance Certificate", "PUC Certificate", "Vehicle Photos"],
     submittedAt: "2024-01-15",
     status: "pending",
     priority: "high",
-    notes: "All documents submitted, awaiting review",
+    notes: "All truck owner documents submitted, awaiting review",
   },
   {
     id: "2",
@@ -34,7 +45,7 @@ const mockVerifications = [
       type: "truck-owner",
     },
     verificationType: "Vehicle Registration",
-    documents: ["RC Book", "Insurance Certificate", "Pollution Certificate"],
+    documents: ["RC Book", "Insurance Certificate", "PUC Certificate", "Vehicle Photos"],
     submittedAt: "2024-01-14",
     status: "pending",
     priority: "medium",
@@ -48,7 +59,7 @@ const mockVerifications = [
       type: "shipper",
     },
     verificationType: "Business Verification",
-    documents: ["GST Certificate", "Company Registration", "Bank Statement"],
+    documents: ["Aadhaar Card", "PAN Card", "GSTIN Certificate"],
     submittedAt: "2024-01-13",
     status: "approved",
     priority: "low",
@@ -61,12 +72,12 @@ const mockVerifications = [
       email: "xyz@transport.com",
       type: "truck-owner",
     },
-    verificationType: "RFID Registration",
-    documents: ["RFID Certificate", "Vehicle Photos"],
+    verificationType: "KYC Documents",
+    documents: ["RC Book", "Insurance Certificate", "PUC Certificate", "Vehicle Photos"],
     submittedAt: "2024-01-12",
     status: "rejected",
     priority: "medium",
-    notes: "RFID certificate expired, resubmission required",
+    notes: "Insurance certificate expired, resubmission required",
   },
 ]
 
@@ -74,6 +85,10 @@ export default function VerificationsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [typeFilter, setTypeFilter] = useState("all")
+  const [selectedVerification, setSelectedVerification] = useState<any>(null)
+  const [rejectionReason, setRejectionReason] = useState("")
+  const [showDocumentViewer, setShowDocumentViewer] = useState(false)
+  const [selectedDocument, setSelectedDocument] = useState<any>(null)
 
   const filteredVerifications = mockVerifications.filter((verification) => {
     const matchesSearch =
@@ -121,9 +136,44 @@ export default function VerificationsPage() {
     }
   }
 
-  const handleVerificationAction = (verificationId: string, action: string) => {
-    // TODO: Implement verification actions
-    console.log(`${action} verification:`, verificationId)
+  const handleVerificationAction = (verificationId: string, action: string, reason?: string) => {
+    const verificationIndex = mockVerifications.findIndex((v) => v.id === verificationId)
+    if (verificationIndex === -1) return
+
+    // Update the verification in the array
+    switch (action) {
+      case "approve":
+        mockVerifications[verificationIndex] = {
+          ...mockVerifications[verificationIndex],
+          status: "approved",
+          notes: "Verification approved by admin",
+        }
+        toast({
+          title: "Verification Approved",
+          description: `${mockVerifications[verificationIndex].user.name}'s ${mockVerifications[verificationIndex].verificationType} has been approved.`,
+        })
+        break
+      case "reject":
+        mockVerifications[verificationIndex] = {
+          ...mockVerifications[verificationIndex],
+          status: "rejected",
+          notes: reason || "Verification rejected by admin",
+        }
+        toast({
+          title: "Verification Rejected",
+          description: `${mockVerifications[verificationIndex].user.name}'s ${mockVerifications[verificationIndex].verificationType} has been rejected.`,
+        })
+        break
+    }
+
+    setRejectionReason("")
+    // Force re-render by updating a state that triggers component refresh
+    setSearchTerm((prev) => prev + "")
+  }
+
+  const handleDocumentView = (docName: string) => {
+    setSelectedDocument({ name: docName, type: "document" })
+    setShowDocumentViewer(true)
   }
 
   return (
@@ -255,7 +305,12 @@ export default function VerificationsPage() {
                         <div key={index} className="flex items-center gap-2 bg-white px-3 py-1 rounded border">
                           <FileText className="h-4 w-4 text-slate-500" />
                           <span className="text-sm">{doc}</span>
-                          <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0"
+                            onClick={() => handleDocumentView(doc)}
+                          >
                             <Eye className="h-3 w-3" />
                           </Button>
                         </div>
@@ -278,35 +333,100 @@ export default function VerificationsPage() {
                   {/* Actions */}
                   {verification.status === "pending" && (
                     <div className="flex gap-3 pt-4 border-t">
-                      <Button onClick={() => handleVerificationAction(verification.id, "approve")} className="flex-1">
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        Approve
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => handleVerificationAction(verification.id, "reject")}
-                        className="flex-1 text-red-600 hover:text-red-700 bg-transparent"
-                      >
-                        <X className="h-4 w-4 mr-2" />
-                        Reject
-                      </Button>
-                      <Button variant="outline" className="bg-transparent">
-                        <Download className="h-4 w-4 mr-2" />
-                        Download All
-                      </Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button className="flex-1 bg-green-600 hover:bg-green-700">
+                            <CheckCircle className="h-4 w-4 mr-2" />
+                            Approve Verification
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Approve Verification</DialogTitle>
+                            <DialogDescription>
+                              Are you sure you want to approve {verification.user.name}'s{" "}
+                              {verification.verificationType}?
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="flex gap-3 justify-end">
+                            <Button variant="outline">Cancel</Button>
+                            <Button
+                              className="bg-green-600 hover:bg-green-700"
+                              onClick={() => {
+                                handleVerificationAction(verification.id, "approve")
+                                // Close dialog by clicking outside or using escape
+                                const dialog = document.querySelector('[role="dialog"]') as HTMLElement
+                                if (dialog) {
+                                  const closeButton = dialog.querySelector(
+                                    'button[aria-label="Close"]',
+                                  ) as HTMLButtonElement
+                                  if (closeButton) closeButton.click()
+                                }
+                              }}
+                            >
+                              Approve
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="flex-1 text-red-600 hover:text-red-700 border-red-200 hover:border-red-300 bg-transparent"
+                          >
+                            <X className="h-4 w-4 mr-2" />
+                            Reject Verification
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Reject Verification</DialogTitle>
+                            <DialogDescription>
+                              Please provide a reason for rejecting {verification.user.name}'s{" "}
+                              {verification.verificationType}.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <Textarea
+                              placeholder="Enter rejection reason..."
+                              value={rejectionReason}
+                              onChange={(e) => setRejectionReason(e.target.value)}
+                            />
+                            <div className="flex gap-3 justify-end">
+                              <Button variant="outline" onClick={() => setRejectionReason("")}>
+                                Cancel
+                              </Button>
+                              <Button
+                                className="bg-red-600 hover:bg-red-700"
+                                onClick={() => {
+                                  handleVerificationAction(verification.id, "reject", rejectionReason)
+                                  // Close dialog
+                                  const dialog = document.querySelector('[role="dialog"]') as HTMLElement
+                                  if (dialog) {
+                                    const closeButton = dialog.querySelector(
+                                      'button[aria-label="Close"]',
+                                    ) as HTMLButtonElement
+                                    if (closeButton) closeButton.click()
+                                  }
+                                }}
+                                disabled={!rejectionReason.trim()}
+                              >
+                                Reject
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   )}
 
                   {verification.status !== "pending" && (
-                    <div className="flex gap-3 pt-4 border-t">
-                      <Button variant="outline" className="bg-transparent">
-                        <Eye className="h-4 w-4 mr-2" />
-                        View Details
-                      </Button>
-                      <Button variant="outline" className="bg-transparent">
-                        <Download className="h-4 w-4 mr-2" />
-                        Download Documents
-                      </Button>
+                    <div className="pt-4 border-t">
+                      <div className="text-sm text-slate-600">
+                        Verification {verification.status} on {verification.submittedAt}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -323,6 +443,11 @@ export default function VerificationsPage() {
               <p className="text-slate-600">Try adjusting your search or filter criteria</p>
             </CardContent>
           </Card>
+        )}
+
+        {/* Document Viewer */}
+        {showDocumentViewer && selectedDocument && (
+          <DocumentViewer document={selectedDocument} onClose={() => setShowDocumentViewer(false)} />
         )}
       </div>
     </ProtectedRoute>

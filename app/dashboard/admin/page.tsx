@@ -29,20 +29,13 @@ const mockRecentActivity = [
   },
   {
     id: "2",
-    type: "dispute",
-    description: "Payment dispute raised for shipment SH001",
-    timestamp: "15 minutes ago",
-    status: "urgent",
-  },
-  {
-    id: "3",
     type: "verification",
     description: "KYC documents submitted by Singh Logistics",
     timestamp: "1 hour ago",
     status: "pending",
   },
   {
-    id: "4",
+    id: "3",
     type: "booking",
     description: "High-value booking completed: ₹45,000",
     timestamp: "2 hours ago",
@@ -182,7 +175,7 @@ export default function AdminDashboard() {
             <CardDescription>Common administrative tasks</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Link href="/dashboard/admin/users">
                 <Button variant="outline" className="w-full h-20 flex-col gap-2 bg-transparent">
                   <Users className="h-6 w-6" />
@@ -191,21 +184,11 @@ export default function AdminDashboard() {
               </Link>
 
               <Link href="/dashboard/admin/verifications">
-                <Button variant="outline" className="w-full h-20 flex-col gap-2 bg-transparent">
+                <Button variant="outline" className="w-full h-20 flex-col gap-2 bg-transparent relative">
                   <CheckCircle className="h-6 w-6" />
                   <span>Verifications</span>
                   {mockStats.pendingVerifications > 0 && (
                     <Badge className="absolute -top-2 -right-2 bg-red-500">{mockStats.pendingVerifications}</Badge>
-                  )}
-                </Button>
-              </Link>
-
-              <Link href="/dashboard/admin/disputes">
-                <Button variant="outline" className="w-full h-20 flex-col gap-2 bg-transparent">
-                  <AlertTriangle className="h-6 w-6" />
-                  <span>Disputes</span>
-                  {mockStats.activeDisputes > 0 && (
-                    <Badge className="absolute -top-2 -right-2 bg-red-500">{mockStats.activeDisputes}</Badge>
                   )}
                 </Button>
               </Link>
@@ -234,16 +217,18 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {mockRecentActivity.map((activity) => (
-                  <div key={activity.id} className="flex items-start gap-3">
-                    <div className="p-2 bg-slate-50 rounded-lg mt-1">{getActivityIcon(activity.type)}</div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-slate-900">{activity.description}</div>
-                      <div className="text-xs text-slate-600 mt-1">{activity.timestamp}</div>
+                {mockRecentActivity
+                  .filter((activity) => activity.type !== "dispute")
+                  .map((activity) => (
+                    <div key={activity.id} className="flex items-start gap-3">
+                      <div className="p-2 bg-slate-50 rounded-lg mt-1">{getActivityIcon(activity.type)}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-slate-900">{activity.description}</div>
+                        <div className="text-xs text-slate-600 mt-1">{activity.timestamp}</div>
+                      </div>
+                      <Badge className={getStatusColor(activity.status)}>{activity.status}</Badge>
                     </div>
-                    <Badge className={getStatusColor(activity.status)}>{activity.status}</Badge>
-                  </div>
-                ))}
+                  ))}
               </div>
             </CardContent>
           </Card>

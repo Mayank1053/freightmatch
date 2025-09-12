@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Progress } from "@/components/ui/progress"
-import { ArrowLeft, Search, Star, TrendingUp, Users, MessageSquare } from "lucide-react"
+import { RatingModal } from "@/components/rating/rating-modal"
+import { ArrowLeft, Search, Star, TrendingUp, Users, MessageSquare, Eye } from "lucide-react"
 import Link from "next/link"
 
 // Mock ratings data
@@ -66,6 +67,13 @@ const mockRatings = [
 export default function RatingsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [ratingFilter, setRatingFilter] = useState("all")
+  const [viewRatingModal, setViewRatingModal] = useState<{
+    isOpen: boolean
+    rating: (typeof mockRatings)[0] | null
+  }>({
+    isOpen: false,
+    rating: null,
+  })
 
   const filteredRatings = mockRatings.filter((rating) => {
     const matchesSearch =
@@ -91,6 +99,13 @@ export default function RatingsPage() {
     return Array.from({ length: 5 }, (_, i) => (
       <Star key={i} className={`h-4 w-4 ${i < rating ? "text-yellow-500 fill-current" : "text-slate-300"}`} />
     ))
+  }
+
+  const handleViewRating = (rating: (typeof mockRatings)[0]) => {
+    setViewRatingModal({
+      isOpen: true,
+      rating,
+    })
   }
 
   return (
@@ -237,12 +252,21 @@ export default function RatingsPage() {
                   <div className="p-4 bg-slate-50 rounded-lg">
                     <p className="text-sm leading-relaxed">{rating.comment}</p>
                   </div>
+
+                  {/* View Details Button */}
+                  <div className="flex justify-end">
+                    <Button variant="outline" size="sm" onClick={() => handleViewRating(rating)}>
+                      <Eye className="h-4 w-4 mr-2" />
+                      View Details
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
 
+        {/* No Ratings Found */}
         {filteredRatings.length === 0 && (
           <Card>
             <CardContent className="text-center py-12">
@@ -255,6 +279,32 @@ export default function RatingsPage() {
               </p>
             </CardContent>
           </Card>
+        )}
+
+        {/* Rating Details Modal */}
+        {viewRatingModal.rating && (
+          <RatingModal
+            isOpen={viewRatingModal.isOpen}
+            onClose={() => setViewRatingModal({ isOpen: false, rating: null })}
+            shipmentDetails={{
+              id: viewRatingModal.rating.bookingId,
+              route: viewRatingModal.rating.route,
+              trucker: "You",
+              company: "Your Company",
+              amount: 0, // Not relevant for viewing
+              deliveryDate: viewRatingModal.rating.date,
+            }}
+            onRatingSubmit={() => {}} // Read-only mode
+            isReadOnly={true}
+            existingRating={{
+              overall: viewRatingModal.rating.rating,
+              punctuality: viewRatingModal.rating.rating,
+              cargoHandling: viewRatingModal.rating.rating,
+              communication: viewRatingModal.rating.rating,
+              professionalism: viewRatingModal.rating.rating,
+              feedback: viewRatingModal.rating.comment,
+            }}
+          />
         )}
       </div>
     </ProtectedRoute>
