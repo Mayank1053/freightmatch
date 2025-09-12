@@ -2,6 +2,7 @@
 
 import { auth } from './auth';
 import { z } from 'zod';
+import { cookies, headers } from 'next/headers';
 
 export const signUpSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters long." }),
@@ -64,5 +65,19 @@ export async function signIn(values: z.infer<typeof signInSchema>) {
 }
 
 export async function signOut() {
-    await auth.api.signOut();
+  await auth.api.signOut({ headers: {} });
+  return { ok: true };
+}
+
+export async function getCurrentUser() {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    return session?.user ?? null;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
 }
