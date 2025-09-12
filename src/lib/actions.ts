@@ -1,6 +1,6 @@
 'use server';
 
-import { auth } from './auth';
+import { auth } from '../auth/auth';
 import { z } from 'zod';
 
 export const signUpSchema = z.object({
