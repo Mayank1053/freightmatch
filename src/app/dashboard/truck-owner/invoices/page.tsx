@@ -253,8 +253,8 @@ export default function InvoicesPage() {
                     </div>
                   </div>
 
-                  {/* Actions */}
-                  <div className="flex gap-3 pt-2">
+                    {/* Actions */}
+                    <div className="flex flex-wrap gap-3 pt-2">
                     <Button
                       variant="outline"
                       size="sm"
@@ -277,16 +277,16 @@ export default function InvoicesPage() {
 
                     {(invoice.status === "pending" || invoice.status === "overdue") && (
                       <Button
-                        variant="outline"
-                        size="sm"
-                        className="bg-transparent"
-                        onClick={() => handleSendReminder(invoice)}
+                      variant="outline"
+                      size="sm"
+                      className="bg-transparent"
+                      onClick={() => handleSendReminder(invoice)}
                       >
-                        <Send className="h-4 w-4 mr-2" />
-                        Send Reminder
+                      <Send className="h-4 w-4 mr-2" />
+                      Send Reminder
                       </Button>
                     )}
-                  </div>
+                    </div>
                 </div>
               </CardContent>
             </Card>
