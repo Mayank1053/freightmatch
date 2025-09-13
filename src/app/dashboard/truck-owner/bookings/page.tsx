@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
@@ -181,7 +181,7 @@ export default function BookingsPage() {
   const confirmStartTrip = () => {
     setBookings((prev) =>
       prev.map((booking) =>
-        booking.id === selectedBooking.id
+        booking.id === selectedBooking?.id
           ? { ...booking, status: "in-transit", startedAt: new Date().toISOString() }
           : booking,
       ),
@@ -216,10 +216,10 @@ export default function BookingsPage() {
     setRatingComment("")
   }
 
-  const confirmCompleteTrip = () => {
+  const confirmCompleteTrip = (bookingId: string, routeForToast?: string) => {
     setBookings((prev) =>
       prev.map((booking) =>
-        booking.id === selectedBooking.id
+        booking.id === bookingId
           ? { ...booking, status: "completed", completedAt: new Date().toISOString() }
           : booking,
       ),
@@ -227,11 +227,13 @@ export default function BookingsPage() {
 
     toast({
       title: "Trip Completed",
-      description: `Trip for ${selectedBooking?.route} has been marked as completed successfully.`,
+      description: `Trip for ${routeForToast ?? "this route"} has been marked as completed successfully.`,
     })
 
-    setShowTripDetails(false)
-    setSelectedBooking(null)
+    // Clear any previously selected booking if it matches the completed one
+    if (selectedBooking?.id === bookingId) {
+      setSelectedBooking(null)
+    }
   }
 
   return (
@@ -394,19 +396,22 @@ export default function BookingsPage() {
                             </div>
                           </div>
                           <div className="flex gap-3">
-                            <Button
-                              variant="outline"
-                              className="flex-1 bg-transparent"
-                              onClick={() => setShowTripDetails(false)}
-                            >
-                              Cancel
-                            </Button>
-                            <Button
-                              className="flex-1 bg-green-600 hover:bg-green-700"
-                              onClick={() => confirmCompleteTrip()}
-                            >
-                              Complete Trip
-                            </Button>
+                            <DialogClose asChild>
+                              <Button
+                                variant="outline"
+                                className="flex-1 bg-transparent"
+                              >
+                                Cancel
+                              </Button>
+                            </DialogClose>
+                            <DialogClose asChild>
+                              <Button
+                                className="flex-1 bg-green-600 hover:bg-green-700"
+                                onClick={() => confirmCompleteTrip(booking.id, booking.route)}
+                              >
+                                Complete Trip
+                              </Button>
+                            </DialogClose>
                           </div>
                         </div>
                       </DialogContent>
